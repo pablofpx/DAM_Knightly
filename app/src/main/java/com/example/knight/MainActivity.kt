@@ -1,6 +1,7 @@
 package com.example.knight
 
 import android.annotation.SuppressLint
+import android.net.wifi.hotspot2.pps.HomeSp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,11 +29,14 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,6 +58,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.knight.core.navigation.NavigationWrapper
 import com.example.knight.ui.theme.KnightTheme
 import kotlin.concurrent.fixedRateTimer
 
@@ -62,7 +67,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            AppGame()
+            NavigationWrapper()
         }
     }
 }
@@ -70,12 +75,11 @@ class MainActivity : ComponentActivity() {
 // crear el navhostcontroller de cero con un tutorial
 @Composable
 fun AppGame() {
-    val navController = rememberNavController()
-    HomeScreen()
 }
 
+ // si pongo preview no puedo verlo por la funcion lambda
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navigatetoGame: () -> Unit) {
     Box(
         modifier = Modifier
             .background(
@@ -92,10 +96,11 @@ fun HomeScreen() {
             color = Color.Transparent,
             modifier = Modifier.fillMaxSize()
         ){
+            // serias dudas de si poner opciones
             Row (
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 20.dp),
+                    .padding(top = 35.dp),
                 horizontalArrangement = Arrangement.End
             ){
                 Button(
@@ -131,8 +136,9 @@ fun HomeScreen() {
 
                 Spacer(modifier = Modifier.height(100.dp) )
 
+                // boton para pasar de screen
                 Button(
-                    onClick = {},
+                    onClick = {navigatetoGame()},
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
                         contentColor = Color.White
@@ -161,6 +167,22 @@ fun GameScreen() {
     // en el centro el monigote
     // y abajo un botón para pulsar y las quests para ganar más monedas
     Scaffold (
+        // la topbar da problemas porque dice que se va a la mierda ?¿
+        /*topBar = {
+            TopAppBar(
+                colors = TopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                    scrolledContainerColor = TODO(),
+                    navigationIconContentColor = TODO(),
+                    actionIconContentColor = TODO(),
+                ),
+                title = {
+                    Text("Knightly")
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+        },*/
         bottomBar = {
             BottomAppBar (
                 containerColor = Color(0xFF431c53),
@@ -248,4 +270,5 @@ fun GameScreen() {
 
     }
 }
+
 
