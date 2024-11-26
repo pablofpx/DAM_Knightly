@@ -14,6 +14,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -167,71 +168,34 @@ fun GameScreen() {
     // en el centro el monigote
     // y abajo un botón para pulsar y las quests para ganar más monedas
     Scaffold (
-        // la topbar da problemas porque dice que se va a la mierda ?¿
-        /*topBar = {
-            TopAppBar(
-                colors = TopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                    scrolledContainerColor = TODO(),
-                    navigationIconContentColor = TODO(),
-                    actionIconContentColor = TODO(),
-                ),
-                title = {
-                    Text("Knightly")
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-        },*/
         bottomBar = {
             BottomAppBar (
-                containerColor = Color(0xFF431c53),
-                contentColor = Color(0xFF210e29),
-                modifier = Modifier
-                    .fillMaxWidth()
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentPadding = PaddingValues(5.dp),
+                tonalElevation = 8.dp
             ){
-                Row (
+                Row(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ){
-                    Button(
-                        onClick = {},
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.home_button),
-                            modifier = Modifier
-                                .size(35.dp),
-                            contentDescription = "home",
-                            contentScale = ContentScale.Fit
-                        )
-                    }
-
-                    Button(
-                        onClick = {},
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.character_button),
-                            modifier = Modifier
-                                .size(35.dp),
-                            contentDescription = "character",
-                            contentScale = ContentScale.Fit
-                        )
-                    }
-                    Button(
-                        onClick = {},
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.homescreen_settings),
-                            modifier = Modifier
-                                .size(35.dp),
-                            contentDescription = "settings?¿",
-                            contentScale = ContentScale.Fit
-                        )
-                    }
+                        .fillMaxWidth()
+                        .height(80.dp), // Altura fija de los botones
+                    horizontalArrangement = Arrangement.SpaceEvenly // Distribuye el espacio de forma equitativa
+                ) {
+                    // Añadimos tres elementos
+                    BottomBarItem(
+                        imageRes = R.drawable.home_button, // Icono de ejemplo
+                        text = "Inicio",
+                        onClick = { /* Acción del botón 1 */ }
+                    )
+                    BottomBarItem(
+                        imageRes = R.drawable.character_button, // Icono de ejemplo
+                        text = "Buscar",
+                        onClick = { /* Acción del botón 2 */ }
+                    )
+                    BottomBarItem(
+                        imageRes = R.drawable.homescreen_settings, // Icono de ejemplo
+                        text = "Perfil",
+                        onClick = { /* Acción del botón 3 */ }
+                    )
                 }
             }
         }
