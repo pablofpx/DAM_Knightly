@@ -28,13 +28,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import com.example.knight.core.navigation.Game
 
 
 // molaria separar las vistas aqui pero meda pereza hacerlo ahora
 
-@Preview
 @Composable
-fun Home() {
+fun Home(navigateToGame: () -> Unit) {
     Box(
         modifier = Modifier
             .background(
@@ -45,7 +47,6 @@ fun Home() {
                     )
                 )
             )
-
     ) {
         Surface (
             color = Color.Transparent,
@@ -93,7 +94,7 @@ fun Home() {
 
                 // boton para pasar de screen
                 Button(
-                    onClick = {/*navigatetoGame()*/},
+                    onClick = { navigateToGame() },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
                         contentColor = Color.White

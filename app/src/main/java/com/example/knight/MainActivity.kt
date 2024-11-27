@@ -10,19 +10,26 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -30,7 +37,9 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -38,6 +47,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,10 +65,12 @@ import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavHostController
@@ -95,7 +107,7 @@ fun GameScreen() {
     Scaffold (
         topBar = { },
         content = { paddingValues ->
-            Content(modifier = Modifier.padding(paddingValues))
+            ConstraintContent(modifier = Modifier.padding(paddingValues))
         },
         bottomBar = { BottomBar()}
     )
@@ -103,62 +115,102 @@ fun GameScreen() {
 }
 
 @Composable
-fun Content(modifier: Modifier = Modifier) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 20.dp, bottom = 56.dp)
-    )
+fun Content() {
     Column (
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color.LightGray)
-            .padding(12.dp)
-    ) {
+            .fillMaxWidth()
+            .fillMaxHeight(0.2f)
+            .height(100.dp)
+            .padding(top = 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ){
         Row (
-            modifier = Modifier.fillMaxWidth().padding(top = 20.dp)
-        ) {
+            modifier = Modifier
+                .fillMaxHeight(0.5f)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ){
             Text(
-                text = "Hola buenas tardes"
+                modifier = Modifier
+                    .fillMaxWidth(0.33f),
+                text = "Hola",
+                fontSize = 28.sp,
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f),
+                text = "Hola",
+                fontSize = 28.sp,
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                text = "Hola",
+                fontSize = 28.sp,
+                textAlign = TextAlign.Center,
             )
         }
     }
 }
 
+val interactionSource = MutableInteractionSource()
 @Composable
-fun ConstraintContent() {
-    ConstraintLayout(Modifier.fillMaxSize()) {
-
+fun ConstraintContent(modifier: Modifier = Modifier) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        val (screen) = createRefs()
+        Box (
+          modifier = Modifier
+              .constrainAs(screen) {
+                  top.linkTo(parent.top)
+                  start.linkTo(parent.start)
+                  end.linkTo(parent.end)
+                  bottom.linkTo(parent.bottom)
+              }
+              .background(Color.Red)
+              .fillMaxSize()
+              .clickable (interactionSource = interactionSource, indication = null){  } // elimina el efecto
+        ) {
+            Content()
+        }
     }
 }
 // shape = RoundedCornerShape(50.dp)
 @Composable
-fun BottomBar(){
-    Row(
+fun BottomBar(modifier: Modifier = Modifier){
+    BottomAppBar(
         modifier = Modifier
-            .fillMaxWidth()
             .background(Color.White)
-            .height(80.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Añadimos tres elementos
-        BottomBarItem(
-            imageRes = R.drawable.home_button, // Icono de ejemplo
-            text = "Inicio",
-            onClick = { /* Acción del botón 1 */ }
-        )
-
-        BottomBarItem(
-            imageRes = R.drawable.character_button, // Icono de ejemplo
-            text = "Buscar",
-            onClick = { /* Acción del botón 2 */ }
-        )
-
-        BottomBarItem(
-            imageRes = R.drawable.homescreen_settings, // Icono de ejemplo
-            text = "Perfil",
-            onClick = { /* Acción del botón 3 */ }
-        )
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Añadimos tres elementos
+            BottomBarItem(
+                imageRes = R.drawable.home_button, // Icono de ejemplo
+                text = "Inicio",
+                onClick = { /* Acción del botón 1 */ }
+            )
+            VerticalDivider(color = Color.LightGray, thickness = 2.dp) // está por verse
+            BottomBarItem(
+                imageRes = R.drawable.character_button, // Icono de ejemplo
+                text = "Buscar",
+                onClick = { /* Acción del botón 2 */ }
+            )
+            VerticalDivider(color = Color.LightGray, thickness = 2.dp)
+            BottomBarItem(
+                imageRes = R.drawable.homescreen_settings, // Icono de ejemplo
+                text = "Perfil",
+                onClick = { /* Acción del botón 3 */ }
+            )
+        }
     }
 }

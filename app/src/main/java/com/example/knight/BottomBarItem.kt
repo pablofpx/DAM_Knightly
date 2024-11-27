@@ -24,8 +24,7 @@ import androidx.compose.ui.unit.dp
 fun BottomBarItem(imageRes: Int, text: String, onClick: () -> Unit) {
     Column(
         modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(8.dp),
+            .clickable(onClick = onClick),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
