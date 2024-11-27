@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.knight.GameScreen
-import com.example.knight.HomeScreen
+import com.example.knight.Home
 import com.example.knight.MainActivity
 
 // esto es para manejar la navegacion
@@ -16,7 +16,7 @@ fun NavigationWrapper() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Home) {
         composable<Home>{
-            HomeScreen { navController.navigate(Game)}
+            Home()
         }
 
         composable<Game> {

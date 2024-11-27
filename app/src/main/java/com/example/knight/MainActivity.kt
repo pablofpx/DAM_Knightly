@@ -46,15 +46,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -79,87 +85,6 @@ fun AppGame() {
 }
 
  // si pongo preview no puedo verlo por la funcion lambda
-@Composable
-fun HomeScreen(navigatetoGame: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFF431c53),
-                        Color(0xFF210e29)
-                    )
-                )
-            )
-
-    ) {
-        Surface (
-            color = Color.Transparent,
-            modifier = Modifier.fillMaxSize()
-        ){
-            // serias dudas de si poner opciones
-            Row (
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 35.dp),
-                horizontalArrangement = Arrangement.End
-            ){
-                Button(
-                    onClick = { },
-                    modifier = Modifier,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = Color.White
-                    ),
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.homescreen_settings),
-                        contentDescription = "Opciones home",
-                        modifier = Modifier.size(35.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                }
-            }
-            Column (
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Knightly",
-                    fontSize = 50.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-
-                Spacer(modifier = Modifier.height(100.dp) )
-
-                // boton para pasar de screen
-                Button(
-                    onClick = {navigatetoGame()},
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = Color.White
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp)
-                ) {
-                    Text(
-                        text = "Pulsa para comenzar",
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily.Serif
-                    )
-                }
-            }
-        }
-
-    }
-}
-
 
 @Preview
 @Composable
@@ -168,71 +93,72 @@ fun GameScreen() {
     // en el centro el monigote
     // y abajo un botón para pulsar y las quests para ganar más monedas
     Scaffold (
-        bottomBar = {
-            BottomAppBar (
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentPadding = PaddingValues(5.dp),
-                tonalElevation = 8.dp
-            ){
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp), // Altura fija de los botones
-                    horizontalArrangement = Arrangement.SpaceEvenly // Distribuye el espacio de forma equitativa
-                ) {
-                    // Añadimos tres elementos
-                    BottomBarItem(
-                        imageRes = R.drawable.home_button, // Icono de ejemplo
-                        text = "Inicio",
-                        onClick = { /* Acción del botón 1 */ }
-                    )
-                    BottomBarItem(
-                        imageRes = R.drawable.character_button, // Icono de ejemplo
-                        text = "Buscar",
-                        onClick = { /* Acción del botón 2 */ }
-                    )
-                    BottomBarItem(
-                        imageRes = R.drawable.homescreen_settings, // Icono de ejemplo
-                        text = "Perfil",
-                        onClick = { /* Acción del botón 3 */ }
-                    )
-                }
-            }
-        }
-    ) { innerPadding ->
-        var coins by remember { mutableStateOf(0) }
+        topBar = { },
+        content = { paddingValues ->
+            Content(modifier = Modifier.padding(paddingValues))
+        },
+        bottomBar = { BottomBar()}
+    )
 
-        Column (
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top
-        ){
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Text("Coins: $coins", fontSize = 20.sp)
-                Text("mas elementos", fontSize = 20.sp)
-            }
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 76.dp)
-                    .clickable { // clickar en la pantalla hace que hagas daño
-                    }
+}
+
+@Composable
+fun Content(modifier: Modifier = Modifier) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 20.dp, bottom = 56.dp)
+    )
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.LightGray)
+            .padding(12.dp)
+    ) {
+        Row (
+            modifier = Modifier.fillMaxWidth().padding(top = 20.dp)
+        ) {
+            Text(
+                text = "Hola buenas tardes"
             )
         }
-
     }
 }
 
+@Composable
+fun ConstraintContent() {
+    ConstraintLayout(Modifier.fillMaxSize()) {
 
+    }
+}
+// shape = RoundedCornerShape(50.dp)
+@Composable
+fun BottomBar(){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .height(80.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Añadimos tres elementos
+        BottomBarItem(
+            imageRes = R.drawable.home_button, // Icono de ejemplo
+            text = "Inicio",
+            onClick = { /* Acción del botón 1 */ }
+        )
+
+        BottomBarItem(
+            imageRes = R.drawable.character_button, // Icono de ejemplo
+            text = "Buscar",
+            onClick = { /* Acción del botón 2 */ }
+        )
+
+        BottomBarItem(
+            imageRes = R.drawable.homescreen_settings, // Icono de ejemplo
+            text = "Perfil",
+            onClick = { /* Acción del botón 3 */ }
+        )
+    }
+}
