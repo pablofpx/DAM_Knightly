@@ -71,7 +71,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavHostController
@@ -124,8 +123,8 @@ fun Content() {
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.Bottom
     ){
         Row (
             modifier = Modifier
@@ -162,7 +161,7 @@ fun Content() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.6f)
+            .fillMaxHeight()
             .padding(top = 100.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -183,7 +182,7 @@ fun Content() {
        // bicho
         Row (
             modifier = Modifier
-                .size(300.dp)
+                .size(350.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -198,16 +197,21 @@ fun Content() {
         Column ( // arma // no deja ampliar el tamaño
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(),
-            horizontalAlignment = Alignment.End
+                .fillMaxHeight(0.3f),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Bottom
         ){
-            Row (
+            Column (
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .width(100.dp)
+                    .fillMaxHeight(),
+                horizontalAlignment = Alignment.End
             ){
-                Text(
-                    text = "Sword",
-                    fontSize = 28.sp
+                Image(
+                    painter = painterResource(R.drawable.sword),
+                    contentDescription = "monster1",
+                    modifier = Modifier
+                        .fillMaxHeight()
                 )
             }
         }

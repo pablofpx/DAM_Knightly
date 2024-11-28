@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,7 +37,7 @@ import com.example.knight.core.navigation.Game
 // molaria separar las vistas aqui pero meda pereza hacerlo ahora
 
 @Composable
-fun Home(navigateToGame: () -> Unit) {
+fun Home( navigateToGame: () -> Unit ) {
     Box(
         modifier = Modifier
             .background(
@@ -53,61 +54,77 @@ fun Home(navigateToGame: () -> Unit) {
             modifier = Modifier.fillMaxSize()
         ){
             // serias dudas de si poner opciones
-            Row (
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 35.dp),
-                horizontalArrangement = Arrangement.End
-            ){
-                Button(
-                    onClick = { },
-                    modifier = Modifier,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = Color.White
-                    ),
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.homescreen_settings),
-                        contentDescription = "Opciones home",
-                        modifier = Modifier.size(35.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                }
-            }
             Column (
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
+                    .fillMaxHeight(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Knightly",
-                    fontSize = 50.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-
-                Spacer(modifier = Modifier.height(100.dp) )
-
-                // boton para pasar de screen
-                Button(
-                    onClick = { navigateToGame() },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = Color.White
-                    ),
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(80.dp)
                 ) {
-                    Text(
-                        text = "Pulsa para comenzar",
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily.Serif
-                    )
+                    Column (
+                        modifier = Modifier
+                            .fillMaxHeight(0.5f),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ){
+                        Text(
+                            text = "Knightly",
+                            fontSize = 55.sp,
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            modifier = Modifier
+                                .padding(16.dp),
+                            text = "Tap, tap, tap...",
+                            fontSize = 20.sp,
+                            fontFamily = FontFamily.Monospace,
+                            color = Color.White
+                        )
+
+                        Spacer(modifier = Modifier.height(100.dp) )
+
+                        // boton para pasar de screen
+                        Button(
+                            onClick = { navigateToGame()},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = Color.White
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                        ) {
+                            Text(
+                                text = "Tap to start!",
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily.Serif
+                            )
+                        }
+                    }
+                }
+                Column (
+                    modifier = Modifier
+                        .fillMaxHeight(0.25f),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Bottom
+                ){
+                    Row (
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ){
+                        Text(
+                            modifier = Modifier,
+                            text = "A game by Pablo",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }
