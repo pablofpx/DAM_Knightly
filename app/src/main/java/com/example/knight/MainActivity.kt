@@ -60,6 +60,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Vertices
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.res.painterResource
@@ -114,14 +115,15 @@ fun GameScreen() {
 
 }
 
+var hp:Int = 10; // una variable que varía en función del bicho (va escalando etc)
+// fun Monster(string: String) : Int { // depende de la imagen del bicho
+
 @Composable
 fun Content() {
     Column (
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.2f)
-            .height(100.dp)
-            .padding(top = 30.dp),
+            .height(100.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
@@ -134,24 +136,80 @@ fun Content() {
             Text(
                 modifier = Modifier
                     .fillMaxWidth(0.33f),
-                text = "Hola",
+                text = "Coins",
                 fontSize = 28.sp,
                 textAlign = TextAlign.Center,
             )
             Text(
                 modifier = Modifier
                     .fillMaxWidth(0.5f),
-                text = "Hola",
+                text = "?????",
                 fontSize = 28.sp,
                 textAlign = TextAlign.Center,
             )
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text = "Hola",
+                text = "?????",
                 fontSize = 28.sp,
                 textAlign = TextAlign.Center,
             )
+        }
+    }
+    // lo suyo es hacer variables para la vida del bicho y cada
+    // vez que se hace click le haces un daño random entre 1-3
+    // cuando muere sumas monedas
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.6f)
+            .padding(top = 100.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        // hp del bicho // stats
+        Row (
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ){
+            Text(
+                modifier = Modifier,
+                text = hp.toString(),
+                fontSize = 28.sp
+            )
+        }
+       // bicho
+        Row (
+            modifier = Modifier
+                .size(300.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ){
+           Image(
+               painter = painterResource(R.drawable.pacmanred),
+               contentDescription = "monster1",
+               modifier = Modifier
+                   .fillMaxSize()
+           )
+        }
+        Column ( // arma // no deja ampliar el tamaño
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            horizontalAlignment = Alignment.End
+        ){
+            Row (
+                modifier = Modifier
+                    .fillMaxHeight()
+            ){
+                Text(
+                    text = "Sword",
+                    fontSize = 28.sp
+                )
+            }
         }
     }
 }
@@ -195,20 +253,20 @@ fun BottomBar(modifier: Modifier = Modifier){
         ) {
             // Añadimos tres elementos
             BottomBarItem(
-                imageRes = R.drawable.home_button, // Icono de ejemplo
-                text = "Inicio",
+                imageRes = R.drawable.sword, // Icono de ejemplo
+                text = "Dungeon",
                 onClick = { /* Acción del botón 1 */ }
             )
             VerticalDivider(color = Color.LightGray, thickness = 2.dp) // está por verse
             BottomBarItem(
-                imageRes = R.drawable.character_button, // Icono de ejemplo
-                text = "Buscar",
+                imageRes = R.drawable.magicbook, // Icono de ejemplo
+                text = "Quests",
                 onClick = { /* Acción del botón 2 */ }
             )
             VerticalDivider(color = Color.LightGray, thickness = 2.dp)
             BottomBarItem(
-                imageRes = R.drawable.homescreen_settings, // Icono de ejemplo
-                text = "Perfil",
+                imageRes = R.drawable.anvil, // Icono de ejemplo
+                text = "Upgrades",
                 onClick = { /* Acción del botón 3 */ }
             )
         }
