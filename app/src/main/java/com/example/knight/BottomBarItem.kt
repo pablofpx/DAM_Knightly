@@ -37,7 +37,7 @@ fun BottomBarItem(imageRes: Int, text: String, onClick: () -> Unit) {
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent, // Fondo transparente
             contentColor = Color.Black), // color del contenido
-        onClick = {}
+        onClick = { onClick() }
     ) {
         Column(
             modifier = Modifier,
