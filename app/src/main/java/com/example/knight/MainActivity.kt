@@ -57,7 +57,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.compose.rememberNavController
 import com.example.knight.core.navigation.Game
 import com.example.knight.core.navigation.NavigationWrapper
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStreamReader
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +73,37 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+data class GameData(
+    var coins: Int = 0,
+    var upgrades: List<String> = listOf()
+)
+
+// Guardar datos en archivo JSON
+fun saveGameData(context: Context, gameData: GameData) {
+    val gson = Gson()
+    val json = gson.toJson(gameData)
+
+    try {
+        val fos: FileOutputStream = context.openFileOutput("game_data.json", Context.MODE_PRIVATE)
+        fos.write(json.toByteArray())
+        fos.close()
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+// Cargar datos desde el archivo JSON
+fun loadGameData(context: Context): GameData? {
+    try {
+        val fis: FileInputStream = context.openFileInput("game_data.json")
+        val reader = InputStreamReader(fis)
+        val gson = Gson()
+        return gson.fromJson(reader, GameData::class.java)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return null
+    }
+}
 
 @Preview
 @Composable
@@ -284,8 +319,8 @@ suspend fun triggerHPScaleAnimation(hpScale: Animatable<Float, AnimationVector1D
 //  no lo voy a usar porque no hace falta
 val interactionSource = MutableInteractionSource()
 
-
-@Composable
+/*
+@Composable // constraint no usada
 fun ConstraintContent(modifier: Modifier = Modifier) {
     ConstraintLayout(
         modifier = Modifier
@@ -307,6 +342,8 @@ fun ConstraintContent(modifier: Modifier = Modifier) {
         }
     }
 }
+*/
+
 
 // shape = RoundedCornerShape(50.dp)
 @Composable
@@ -344,9 +381,7 @@ fun BottomBar() {
             SettingsDialog(
                 show = show,
                 onDismissRequest = { show = false },
-                onConfirmation = {
-                    show = false
-                }
+                onConfirmation = { show = false }
             )
         }
     }

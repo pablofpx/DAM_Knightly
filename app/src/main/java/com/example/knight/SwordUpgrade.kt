@@ -1,9 +1,13 @@
 package com.example.knight
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,10 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SwordUpgrade(upgradeSwordCost: Int){
+fun SwordUpgrade(upgradeSwordCost: Int, changeCost: () -> Unit){
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { changeCost() },
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ){
@@ -54,10 +59,63 @@ fun SwordUpgrade(upgradeSwordCost: Int){
             )
         }
     }
+    Spacer(
+        modifier = Modifier.height(16.dp)
+    )
+}
+
+@Composable
+fun MagicUpgrade(upgradeMagicCost: Int, changeCost: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(50.dp),
+                painter = painterResource(R.drawable.currency),
+                contentDescription = "upgrade"
+            )
+            Text(
+                fontSize = 20.sp,
+                text = "Magic Damage"
+            )
+        }
+
+        // coste de la mejora procedural
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ){
+            Text(
+                fontSize = 20.sp,
+                text = upgradeMagicCost.toString()
+            )
+            Image(
+                modifier = Modifier
+                    .size(20.dp),
+                painter = painterResource(R.drawable.currency),
+                contentDescription = "cost_icon"
+            )
+        }
+    }
+    Spacer(
+        modifier = Modifier.height(16.dp)
+    )
 }
 
 @Preview
 @Composable
 fun PreviewDialog() {
-    SwordUpgrade(100)
+    Column(
+        modifier = Modifier
+    ) {
+        SwordUpgrade(100, changeCost ={})
+        MagicUpgrade(100, changeCost = {})
+    }
 }

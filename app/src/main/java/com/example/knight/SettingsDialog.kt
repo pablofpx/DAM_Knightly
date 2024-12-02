@@ -1,6 +1,7 @@
 package com.example.knight
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +20,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -31,7 +37,8 @@ fun SettingsDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit
 ) {
-    var upgradeSwordCost = 100
+    var upgradeSwordCost by remember { mutableStateOf(50) }
+    var upgradeMagicCost by remember { mutableStateOf(50) }
     if(show){
         Dialog(onDismissRequest = { onDismissRequest() }) {
             Card(
@@ -53,20 +60,27 @@ fun SettingsDialog(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // lo mejor sería recorrer una lista de funciones
                     LazyColumn (
                         modifier = Modifier
                             .height(200.dp)
                             .fillMaxWidth()
                     ){
                         item{
-                            SwordUpgrade(upgradeSwordCost)
+                            SwordUpgrade(upgradeSwordCost = upgradeSwordCost,
+                                changeCost = { upgradeSwordCost+=100 }
+                            )
+                        }
+                        item {
+                            MagicUpgrade(upgradeMagicCost = upgradeMagicCost,
+                                changeCost = { upgradeMagicCost+=100 })
                         }
                     }
 
                     Row (
                         modifier = Modifier
                             .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.Center
                     ){
                         TextButton(onClick = { onDismissRequest() }) {
                             Text(text = "Cerrar")
