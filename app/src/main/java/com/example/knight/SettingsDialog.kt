@@ -1,5 +1,6 @@
 package com.example.knight
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 
@@ -28,6 +31,7 @@ fun SettingsDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit
 ) {
+    var upgradeSwordCost = 100
     if(show){
         Dialog(onDismissRequest = { onDismissRequest() }) {
             Card(
@@ -43,13 +47,22 @@ fun SettingsDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Settings",
+                        text = "Upgrades",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "Opciones de ajustes aquí...")
-                    Spacer(modifier = Modifier.height(16.dp))
+
+                    LazyColumn (
+                        modifier = Modifier
+                            .height(200.dp)
+                            .fillMaxWidth()
+                    ){
+                        item{
+                            SwordUpgrade(upgradeSwordCost)
+                        }
+                    }
+
                     Row (
                         modifier = Modifier
                             .fillMaxWidth(),

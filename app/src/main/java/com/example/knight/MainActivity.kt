@@ -222,7 +222,7 @@ fun Content(modifier: Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
         
         // espada y magia
-        var alignment: Alignment
+        val alignment: Alignment
         val weapon: Int
 
         if (currentMonsterIndex % 2 == 0) {
