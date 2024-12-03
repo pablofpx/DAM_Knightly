@@ -56,6 +56,8 @@ import com.example.knight.data.model.repository.GameState
 import com.example.knight.ui.theme.components.BottomBarItem
 import com.example.knight.ui.theme.components.Monster
 import com.example.knight.ui.theme.components.TopMenu
+import com.example.knight.utils.triggerHPScaleAnimation
+import com.example.knight.utils.triggerShakeAnimation
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -75,8 +77,30 @@ class MainActivity : ComponentActivity() {
 @Preview
 @Composable
 fun GameScreenPreview() {
-    val gameState = remember { mutableStateOf(GameState())}
-    GameScreen()
+    val mockGameState = GameState(
+        coins = 0,
+        hp = 15,
+        maxHp = 15,
+        currentMonsterIndex = 0,
+        monsterLevel = 1,
+        monsterType = "ghost"
+    )
+    // Simulación de guardar estado
+    val saveGameState: (GameState) -> Unit = { updatedState ->
+        println("Simulated save: $updatedState")
+    }
+
+    // Simulación de la salida del juego
+    val onExit: () -> Unit = {
+        println("Simulated exit")
+    }
+
+    // Renderizamos GameScreen con el estado y funciones simuladas
+    GameScreen(
+        gameState = mockGameState,
+        saveGameState = saveGameState,
+        onExit = onExit
+    )
 }
 
 // juego
@@ -139,45 +163,38 @@ fun Content(
     saveGameState: (GameState) -> Unit,
     modifier: Modifier
 ) {
-    var monsters = listOf(
-        R.drawable.physical_pakman,
-        R.drawable.ghost_star,
-        R.drawable.ghost_squid
-    )
 
-    // Definir el monstruo actual usando el índice de `gameState`
-    val currentMonster = monsters[gameState.currentMonsterIndex]
-
-    // Animaciones
-    val shakeOffset = remember { Animatable(0f) }
-    val hpScale = remember { Animatable(1f, Float.VectorConverter) }
+    /* Animaciones
     val coroutineScope = rememberCoroutineScope()
+    val shakeOffset = remember { Animatable(0f) }
+    val hpScale = remember { Animatable(1f) }
+
+     */
+
+    val currentMonster = when (gameState.currentMonsterIndex) {
+        0 -> R.drawable.physical_pakman
+        1 -> R.drawable.ghost_star
+        2 -> R.drawable.ghost_squid
+        else -> R.drawable.ghost_squid
+    }
 
     // Función para el ataque al monstruo
-    val onAttack = {
-        // Aplicamos daño al monstruo
-        gameState.hp -= 2
-        if (gameState.hp <= 0) {
-            // Si el monstruo muere, actualizamos el estado del juego
+    fun handleAttack() {
+        val updatedGameState = if (gameState.hp > 2) {
+            gameState.copy(hp = gameState.hp - 2)
+        } else {
             val newLevel = gameState.monsterLevel + 1
-            val newMaxHp = 15 + (newLevel * 5) // Escala con el nivel
+            val newMaxHp = 15 + (newLevel * 5)
             val randomCoins = (2..5).random()
-
-            val updatedGameState = gameState.copy(
+            gameState.copy(
                 hp = newMaxHp,
                 maxHp = newMaxHp,
                 monsterLevel = newLevel,
-                currentMonsterIndex = (gameState.currentMonsterIndex + 1) % 3,
+                currentMonsterIndex = (gameState.currentMonsterIndex + 1) % 2,
                 coins = gameState.coins + randomCoins
             )
-
-            saveGameState(updatedGameState) // Guardar el nuevo estado
         }
-
-        coroutineScope.launch {
-            triggerShakeAnimation(shakeOffset)
-            triggerHPScaleAnimation(hpScale)
-        }
+        saveGameState(updatedGameState)
     }
 
     Column(
@@ -194,70 +211,31 @@ fun Content(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Usamos el composable Monster
-        Monster(
-            hp = gameState.hp,
-            maxHp = gameState.maxHp,
-            imageRes = currentMonster,
-            onAttack = { onAttack() },
-            shakeOffset = shakeOffset,
-            hpScale = hpScale,
-            gameState = gameState,
-            saveGameState = saveGameState
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Mostrar las armas
-        val weapon = if (gameState.currentMonsterIndex % 2 == 0) {
-            R.drawable.weapon_sword
-        } else {
-            R.drawable.weapon_hand
-        }
-
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp),
-            contentAlignment = Alignment.TopStart
+                .fillMaxHeight(.9f),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(weapon),
-                contentDescription = "Weapon",
-                modifier = Modifier.fillMaxHeight(0.8f)
+            Monster(
+                hp = gameState.hp,
+                maxHp = gameState.maxHp,
+                imageRes = currentMonster,
+                onAttack = ::handleAttack
             )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Mostrar las armas
+            val weapon = if (gameState.currentMonsterIndex % 2 == 0) {
+                R.drawable.weapon_sword
+            } else {
+                R.drawable.weapon_hand
+            }
+        }
     }
 }
 
-
-// funciones para animar los efectos
-suspend fun triggerShakeAnimation(shakeOffset: Animatable<Float, AnimationVector1D>) {
-    shakeOffset.animateTo(
-        targetValue = 20f,
-        animationSpec = tween(durationMillis = 50)
-    )
-    shakeOffset.animateTo(
-        targetValue = -20f,
-        animationSpec = tween(durationMillis = 50)
-    )
-    shakeOffset.animateTo(
-        targetValue = 0f,
-        animationSpec = tween(durationMillis = 50)
-    )
-}
-
-suspend fun triggerHPScaleAnimation(hpScale: Animatable<Float, AnimationVector1D>) {
-    hpScale.animateTo(
-        targetValue = 1.3f,
-        animationSpec = tween(durationMillis = 50)
-    )
-    hpScale.animateTo(
-        targetValue = 1f,
-        animationSpec = tween(durationMillis = 50)
-    )
-}
 
 //  no lo voy a usar porque no hace falta
 val interactionSource = MutableInteractionSource()

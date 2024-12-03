@@ -45,7 +45,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
-    implementation ("com.google.code.gson:gson:2.8.9")
+    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("androidx.compose.animation:animation:1.6.7")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

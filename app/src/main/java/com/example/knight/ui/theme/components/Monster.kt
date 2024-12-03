@@ -7,7 +7,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,48 +17,30 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.knight.core.navigation.Game
+import com.example.knight.data.model.Monster
 import com.example.knight.data.model.repository.GameRepository
 import com.example.knight.data.model.repository.GameState
+
 
 @Composable
 fun Monster(
     hp: Int,
     maxHp: Int,
     imageRes: Int,
-    onAttack: () -> Unit,
-    shakeOffset: Animatable<Float>,
-    hpScale: Animatable<Float>,
-    gameState: GameState,
-    saveGameState: (GameState) -> Unit
+    onAttack: () -> Unit
 ) {
-    if (gameState.hp <= 0) {
-        val newLevel = gameState.monsterLevel + 1
-        val newMaxHp = 15 + (newLevel * 5) // Escala con el nivel
-        val randomCoins = (2..5).random()
-
-        // Actualizamos el estado del juego
-        val updatedGameState = gameState.copy(
-            hp = newMaxHp,
-            maxHp = newMaxHp,
-            monsterLevel = newLevel,
-            currentMonsterIndex = (gameState.currentMonsterIndex + 1) % 3, // Cambio de monstruo (suponiendo 3 tipos)
-            coins = gameState.coins + randomCoins
-        )
-
-        // Guardar el nuevo estado
-        saveGameState(updatedGameState)
-    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            //.weight(1f)
             .clickable { onAttack() },
         contentAlignment = Alignment.Center
     ) {
@@ -67,9 +51,6 @@ fun Monster(
         ) {
             // Muestra la vida del monstruo
             Text(
-                modifier = Modifier
-                    .graphicsLayer(scaleX = hpScale.value, scaleY = hpScale.value)
-                    .padding(bottom = 16.dp),
                 text = "HP: $hp / $maxHp",
                 fontSize = 30.sp,
                 color = if (hp > maxHp / 3) Color.Black else Color.Red
@@ -81,16 +62,17 @@ fun Monster(
                 contentDescription = "Monster",
                 modifier = Modifier
                     .size(300.dp)
-                    .offset { IntOffset(shakeOffset.value.toInt(), 0) }
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            // Mensaje de "Atacar"
+            Text(
+                modifier = Modifier,
+                text = "Attack!",
+                fontSize = 30.sp
             )
         }
 
-        // Mensaje de "Atacar"
-        Text(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            text = "Attack!",
-            fontSize = 30.sp
-        )
+
     }
 }
         /*
@@ -148,6 +130,24 @@ fun Monster(
             fontSize = 30.sp
         )
     }
+
+
+    if (gameState.hp <= 0) {
+        val newLevel = gameState.monsterLevel + 1
+        val newMaxHp = 15 + (newLevel * 5) // Escala con el nivel
+        val randomCoins = (2..5).random()
+
+        // Actualizamos el estado del juego
+        val updatedGameState = gameState.copy(
+            hp = newMaxHp,
+            maxHp = newMaxHp,
+            monsterLevel = newLevel,
+            currentMonsterIndex = (gameState.currentMonsterIndex + 1) % 2, // Cambio de monstruo (suponiendo 2 tipos)
+            coins = gameState.coins + randomCoins
+        )
+
+        // Guardar el nuevo estado
+        saveGameState(updatedGameState)
 
 
          */
