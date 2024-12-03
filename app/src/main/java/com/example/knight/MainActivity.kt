@@ -2,7 +2,6 @@ package com.example.knight
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -14,7 +13,6 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -49,21 +47,22 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.compose.rememberNavController
-import com.example.knight.core.navigation.Game
 import com.example.knight.core.navigation.NavigationWrapper
-import com.google.gson.Gson
+import com.example.knight.data.model.repository.GameRepository
+import com.example.knight.data.model.repository.GameState
+import com.example.knight.ui.theme.components.BottomBarItem
+import com.example.knight.ui.theme.components.Monster
+import com.example.knight.ui.theme.components.TopMenu
 import kotlinx.coroutines.launch
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStreamReader
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var gameRepository: GameRepository
+    private lateinit var gameState: GameState
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -73,47 +72,20 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-data class GameData(
-    var coins: Int = 0,
-    var upgrades: List<String> = listOf()
-)
-
-// Guardar datos en archivo JSON
-fun saveGameData(context: Context, gameData: GameData) {
-    val gson = Gson()
-    val json = gson.toJson(gameData)
-
-    try {
-        val fos: FileOutputStream = context.openFileOutput("game_data.json", Context.MODE_PRIVATE)
-        fos.write(json.toByteArray())
-        fos.close()
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-}
-
-// Cargar datos desde el archivo JSON
-fun loadGameData(context: Context): GameData? {
-    try {
-        val fis: FileInputStream = context.openFileInput("game_data.json")
-        val reader = InputStreamReader(fis)
-        val gson = Gson()
-        return gson.fromJson(reader, GameData::class.java)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        return null
-    }
-}
-
 @Preview
 @Composable
 fun GameScreenPreview() {
+    val gameState = remember { mutableStateOf(GameState())}
     GameScreen()
 }
 
 // juego
 @Composable
-fun GameScreen(onExit: () -> Unit = {}) {
+fun GameScreen(
+    gameState: GameState,
+    saveGameState: (GameState) -> Unit,
+    onExit: () -> Unit
+) {
     var showExitConfirmation by remember { mutableStateOf(false) }
 
     BackHandler {
@@ -144,7 +116,11 @@ fun GameScreen(onExit: () -> Unit = {}) {
     Scaffold (
         topBar = { },
         content = { paddingValues ->
-            Content(modifier = Modifier.padding(paddingValues))
+            Content(
+                gameState = gameState,
+                saveGameState = saveGameState,
+                modifier = Modifier.padding(paddingValues)
+            )
         },
         bottomBar = {
             BottomBar()
@@ -158,134 +134,101 @@ fun GameScreen(onExit: () -> Unit = {}) {
 
 
 @Composable
-fun Content(modifier: Modifier) {
+fun Content(
+    gameState: GameState,
+    saveGameState: (GameState) -> Unit,
+    modifier: Modifier
+) {
     var monsters = listOf(
         R.drawable.physical_pakman,
         R.drawable.ghost_star,
         R.drawable.ghost_squid
     )
 
-    var hpInitial = 15;
-    var hp by remember { mutableStateOf(15) }
-    var currentMonsterIndex by remember { mutableStateOf(0)}
-    val currentMonster = monsters[currentMonsterIndex]
-    var coins by remember { mutableStateOf(0) }
+    // Definir el monstruo actual usando el índice de `gameState`
+    val currentMonster = monsters[gameState.currentMonsterIndex]
 
-    //animationss
+    // Animaciones
     val shakeOffset = remember { Animatable(0f) }
     val hpScale = remember { Animatable(1f, Float.VectorConverter) }
-
     val coroutineScope = rememberCoroutineScope()
 
+    // Función para el ataque al monstruo
+    val onAttack = {
+        // Aplicamos daño al monstruo
+        gameState.hp -= 2
+        if (gameState.hp <= 0) {
+            // Si el monstruo muere, actualizamos el estado del juego
+            val newLevel = gameState.monsterLevel + 1
+            val newMaxHp = 15 + (newLevel * 5) // Escala con el nivel
+            val randomCoins = (2..5).random()
+
+            val updatedGameState = gameState.copy(
+                hp = newMaxHp,
+                maxHp = newMaxHp,
+                monsterLevel = newLevel,
+                currentMonsterIndex = (gameState.currentMonsterIndex + 1) % 3,
+                coins = gameState.coins + randomCoins
+            )
+
+            saveGameState(updatedGameState) // Guardar el nuevo estado
+        }
+
+        coroutineScope.launch {
+            triggerShakeAnimation(shakeOffset)
+            triggerHPScaleAnimation(hpScale)
+        }
+    }
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .background(Color.LightGray)
             .fillMaxSize()
-            .padding(16.dp), // dudas de si llenar o no toda la pantalla
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        // menu de monedas, etc
-        TopMenu(coins)
+        // Menú superior con las monedas
+        TopMenu(gameState.coins)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // monstruo // la idea es que haya que tapear para bajarle la vida
-        // cuando muera recibes una cantidad de oro random
+        // Usamos el composable Monster
+        Monster(
+            hp = gameState.hp,
+            maxHp = gameState.maxHp,
+            imageRes = currentMonster,
+            onAttack = { onAttack() },
+            shakeOffset = shakeOffset,
+            hpScale = hpScale,
+            gameState = gameState,
+            saveGameState = saveGameState
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Mostrar las armas
+        val weapon = if (gameState.currentMonsterIndex % 2 == 0) {
+            R.drawable.weapon_sword
+        } else {
+            R.drawable.weapon_hand
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
-                .clickable(interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    // queda pendiente hacer escalado de vida
-                    hp -= 2 // el daño va a variar en función del arma
-                    if (hp <= 0) {
-                        val randomIncrement = (2..5).random()
-
-                        val newMaxHp = (hpInitial + randomIncrement).coerceAtMost(60)
-                        hp = newMaxHp
-                        hpInitial = newMaxHp
-                        // si muere escoge otro
-                        // reinicia su vida pero depende del monstruo (WIP)
-                        currentMonsterIndex = (monsters.indices).random()
-                        // ganar monedas
-                        coins+= (2..4).random()
-                    }
-
-                    coroutineScope.launch {
-                        triggerShakeAnimation(shakeOffset)
-                        triggerHPScaleAnimation(hpScale)
-                    }
-                },
-            contentAlignment = Alignment.Center
+                .height(220.dp),
+            contentAlignment = Alignment.TopStart
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // hp del bicho
-                Text(
-                    modifier = Modifier
-                        .graphicsLayer(scaleX = hpScale.value, scaleY = hpScale.value)
-                        .padding(bottom = 16.dp),
-                    text = "HP: $hp",
-                    fontSize = 30.sp,
-                    color = if (hp > 7) Color.Black else Color.Red
-                )
-
-                // bicho que varía aleatoriamente de imagen
-                Image(
-                    painter = painterResource(currentMonster),
-                    contentDescription = "Monster",
-                    modifier = Modifier
-                        .size(300.dp)
-                        .offset { IntOffset(shakeOffset.value.toInt(), 0) }
-                )
-            }
-            // mensaje para incentivar a pulsar
-            Text(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter),
-                text = "Attack!",
-                fontSize = 30.sp
+            Image(
+                painter = painterResource(weapon),
+                contentDescription = "Weapon",
+                modifier = Modifier.fillMaxHeight(0.8f)
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        
-        // espada y magia
-        val alignment: Alignment
-        val weapon: Int
-
-        if (currentMonsterIndex % 2 == 0) {
-            weapon = R.drawable.weapon_sword
-            alignment = Alignment.TopEnd
-        } else {
-            weapon = R.drawable.weapon_hand
-            alignment = Alignment.TopStart
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp), // Ajustar el tamaño de la espada
-            contentAlignment = alignment
-        ) {
-            Row {
-                Image(
-                    painter = painterResource(weapon),
-                    contentDescription = "weapons",
-                    modifier = Modifier
-                        .fillMaxHeight(0.8f)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
     }
-
 }
 
 
