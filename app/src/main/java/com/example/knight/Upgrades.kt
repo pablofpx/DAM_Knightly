@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,9 +34,10 @@ fun SwordUpgrade(upgradeSwordCost: Int, changeCost: () -> Unit){
             Image(
                 modifier = Modifier
                     .size(50.dp),
-                painter = painterResource(R.drawable.currency),
+                painter = painterResource(R.drawable.weapon_sword),
                 contentDescription = "upgrade"
             )
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
                 fontSize = 20.sp,
                 text = "Sword Damage"
@@ -78,9 +80,10 @@ fun MagicUpgrade(upgradeMagicCost: Int, changeCost: () -> Unit) {
             Image(
                 modifier = Modifier
                     .size(50.dp),
-                painter = painterResource(R.drawable.currency),
+                painter = painterResource(R.drawable.weapon_hand),
                 contentDescription = "upgrade"
             )
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
                 fontSize = 20.sp,
                 text = "Magic Damage"

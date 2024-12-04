@@ -39,6 +39,7 @@ fun SettingsDialog(
 ) {
     var upgradeSwordCost by remember { mutableStateOf(50) }
     var upgradeMagicCost by remember { mutableStateOf(50) }
+
     if(show){
         Dialog(onDismissRequest = { onDismissRequest() }) {
             Card(
@@ -70,6 +71,19 @@ fun SettingsDialog(
                             SwordUpgrade(upgradeSwordCost = upgradeSwordCost,
                                 changeCost = { upgradeSwordCost+=100 }
                             )
+                        }
+                        item {
+                            MagicUpgrade(upgradeMagicCost = upgradeMagicCost,
+                                changeCost = { upgradeMagicCost+=100 })
+                        }
+                        item{
+                            SwordUpgrade(upgradeSwordCost = upgradeSwordCost,
+                                changeCost = { upgradeSwordCost+=100 }
+                            )
+                        }
+                        item {
+                            MagicUpgrade(upgradeMagicCost = upgradeMagicCost,
+                                changeCost = { upgradeMagicCost+=100 })
                         }
                         item {
                             MagicUpgrade(upgradeMagicCost = upgradeMagicCost,
